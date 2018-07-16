@@ -1,0 +1,100 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+  creationTimestamp: 2018-07-16T16:38:20Z
+  generation: 2
+  labels:
+    app: kube-lego
+    chart: kube-lego-0.4.2
+    heritage: Tiller
+    release: vetoed-markhor
+  name: vetoed-markhor-kube-lego
+  namespace: default
+  resourceVersion: "24542"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/vetoed-markhor-kube-lego
+  uid: a62d5c2b-8916-11e8-827b-12e7dc3ceabe
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: kube-lego
+      release: vetoed-markhor
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kube-lego
+        release: vetoed-markhor
+    spec:
+      containers:
+      - env:
+        - name: LEGO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: LEGO_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: LEGO_EMAIL
+          value: vipulsharma@mail.ru
+        - name: LEGO_PORT
+          value: "8080"
+        - name: LEGO_URL
+          value: https://acme-staging.api.letsencrypt.org/directory
+        image: jetstack/kube-lego:0.1.6
+        imagePullPolicy: IfNotPresent
+        name: kube-lego
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: default
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-07-16T16:38:20Z
+    lastUpdateTime: 2018-07-16T16:38:20Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-07-16T16:38:20Z
+    lastUpdateTime: 2018-07-16T17:13:54Z
+    message: ReplicaSet "vetoed-markhor-kube-lego-6fcd4bc5b8" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
